@@ -277,14 +277,17 @@ class ShowAction(InferenceAction):
         visualizer = context["visualizer"]
         extractor = context["extractor"]
         image_fpath = entry["file_name"]
+        image_dir = os.path.basename(os.path.dirname(image_fpath))
         logger.info(f"Processing {image_fpath}")
         image = cv2.cvtColor(entry["image"], cv2.COLOR_BGR2GRAY)
         image = np.tile(image[:, :, np.newaxis], [1, 1, 3])
         data = extractor(outputs)
         image_vis = visualizer.visualize(image, data)
         entry_idx = context["entry_idx"] + 1
-        out_fname = cls._get_out_fname(entry_idx, context["out_fname"])
-        out_dir = os.path.dirname(out_fname)
+        # out_fname = cls._get_out_fname(entry_idx, context["out_fname"])
+        # out_dir = os.path.dirname(out_fname)
+        out_dir = os.path.join('/mnt/training-data/densepose', image_dir)
+        out_fname = os.path.join(out_dir, os.path.basename(image_fpath))
         if len(out_dir) > 0 and not os.path.exists(out_dir):
             os.makedirs(out_dir)
         cv2.imwrite(out_fname, image_vis)
